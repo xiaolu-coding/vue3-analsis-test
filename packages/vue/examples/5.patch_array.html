@@ -1,0 +1,26 @@
+<div id="app">
+  <div v-for="user in users" :key="user.id">{{user.name}}</div>
+</div>
+
+
+<script src="../dist/vue.global.js"></script>
+<script>
+  const app = Vue.createApp({
+    data() {
+      return {
+        users: [
+          {id: 1, name: 'xiaolu1'},
+          {id: 2, name: 'xiaolu2'}
+        ]
+      }
+    },
+    mounted() {
+      setTimeout(() => {
+        this.users[1].name = 'xiaolu3'
+        this.users.push({
+          id: 3, name: 'xiaolu4'
+        })
+      }, 1000)
+    }
+  }).mount('#app')
+</script>

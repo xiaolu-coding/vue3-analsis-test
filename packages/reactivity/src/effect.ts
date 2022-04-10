@@ -311,10 +311,10 @@ export function trigger(
     // trigger all effects for target
     // 展开target里的所有值，并values执行get，触发所有依赖
     deps = [...depsMap.values()]
+    // 如果操作目标是数组，并且修改了数组的length属性
   } else if (key === 'length' && isArray(target)) {
-    // 触发array的length属性
-    // 如果key是length并且target是数组
-    // 对forEach进行的操作
+    // 对于索引大于或等于新的length值的元素
+    // 需要把所有相关联的副作用函数取出并添加到 deps 中待执行
     depsMap.forEach((dep, key) => {
       // 如果key是length 或 key >= 新值
       if (key === 'length' || key >= (newValue as number)) {
@@ -325,7 +325,7 @@ export function trigger(
   } else {
     // 计划集合|添加|删除的运行
     // schedule runs for SET | ADD | DELETE
-    // 如果 key 不是 空
+    // 如果 key 不是 空 
     if (key !== void 0) {
       // depsMap.get(key) 获取到 key: [ activeEffect ]这个更新函数数组
       // 然后将更新函数数组推入到deps中
@@ -420,14 +420,16 @@ export function triggerEffects(
   // 找到相关依赖，循环所有的副作用函数
   for (const effect of isArray(dep) ? dep : [...dep]) {
     // 如果effect不等于activeEffect 或 ffect.allowRecurse
+    // 如果trigger触发执行的副作用函数与现在正在执行的副作用函数相同，则不触发执行
     if (effect !== activeEffect || effect.allowRecurse) {
       if (__DEV__ && effect.onTrigger) {
         effect.onTrigger(extend({ effect }, debuggerEventExtraInfo))
       }
-      // 如果effect.scheduler
+      // 如果一个副作用函数存在调度器，则调用该调度器，并将副作用函数作为参数传递
       if (effect.scheduler) {
         effect.scheduler()
       } else {
+        // 否则直接执行副作用函数 
         effect.run()
       }
     }

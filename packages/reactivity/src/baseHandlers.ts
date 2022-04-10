@@ -184,10 +184,13 @@ function createSetter(shallow = false) {
 
     const hadKey =
     // 如果target是数组并且key是整数
+    // target是数组类型，key是整数类型，那么就是key就是索引
       isArray(target) && isIntegerKey(key)
         // key字符串转为Number类型 如果小于target的长度 ，返回true 否则 返回false
+        // 如果代理目标是数组，则检测被设置的索引值是否小于数组长度，如果小于就是SET操作，大于就是ADD操作
         ? Number(key) < target.length
         // 如果不是数组，看target上是否有key 有的话返回true，否则返回false
+        // 如果target不是数组类型，则检测target上是否有key，如果有就是SET操作，否则就是ADD操作
         : hasOwn(target, key)
     // 通过Reflect设置新值然后赋值给result
     const result = Reflect.set(target, key, value, receiver)

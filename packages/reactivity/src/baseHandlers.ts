@@ -233,6 +233,11 @@ function has(target: object, key: string | symbol): boolean {
 }
 
 function ownKeys(target: object): (string | symbol)[] {
+  // 将副作用函数与ITERATE_KEY相关联 为了拦截for in 循环
+  // 使用ITERATE_KEY的原因是，当get和set时，我们能拿到key，但是ownKeys时，我们不能拿到key
+  // p96页
+  // 既然追踪的是ITEATE_KEY，那么触发响应的时候应该也触发它
+  // 判断是否是数组，如果是数组就以length作为关联的key
   track(target, TrackOpTypes.ITERATE, isArray(target) ? 'length' : ITERATE_KEY)
   return Reflect.ownKeys(target)
 }

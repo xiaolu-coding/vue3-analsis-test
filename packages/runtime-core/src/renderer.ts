@@ -1318,9 +1318,11 @@ function baseCreateRenderer(
       endMeasure(instance, `mount`)
     }
   }
-
+  // 更新组件
   const updateComponent = (n1: VNode, n2: VNode, optimized: boolean) => {
+    // 获取component实例
     const instance = (n2.component = n1.component)!
+    // 判断是否要更新
     if (shouldUpdateComponent(n1, n2, optimized)) {
       if (
         __FEATURE_SUSPENSE__ &&
@@ -1332,6 +1334,7 @@ function baseCreateRenderer(
         if (__DEV__) {
           pushWarningContext(n2)
         }
+        // 更新
         updateComponentPreRender(instance, n2, optimized)
         if (__DEV__) {
           popWarningContext()
@@ -1348,6 +1351,7 @@ function baseCreateRenderer(
       }
     } else {
       // no update needed. just copy over properties
+      // 不需要更新
       n2.component = n1.component
       n2.el = n1.el
       instance.vnode = n2

@@ -86,24 +86,31 @@ export class ReactiveEffect<T = any> {
     if (!this.active) {
       return this.fn()
     }
-    // 获取父亲
+    // 设置parent  为当前活跃的effect副作用函数
+    console.log('thisssssssssssssss', this)
+    console.log('activeEffectttttttttttt', activeEffect)
     let parent: ReactiveEffect | undefined = activeEffect
-    // 是否需要收集
+    // 设置lastShouldTrack 最后是否应该收集
     let lastShouldTrack = shouldTrack
-    // 找到自己的最大的父亲
+    // console.log('parent', parent)
+    // 循环parent
     while (parent) {
+      // 如果只有一层就返回
       if (parent === this) {
         return
       }
+      console.log('parentttttttttttttttttt', parent)
+      // 一层一层找，直到找到this为止，也就是当前的effect
       parent = parent.parent
     }
     try {
+      // 将当前的effect的parent设置为当前活跃的effect
       this.parent = activeEffect
+      console.log('this', this)
+      // 将当前活跃的effect设置为effect
       activeEffect = this
       shouldTrack = true
-
       trackOpBit = 1 << ++effectTrackDepth
-
       if (effectTrackDepth <= maxMarkerBits) {
         initDepMarkers(this)
       } else {

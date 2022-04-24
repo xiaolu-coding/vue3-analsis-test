@@ -1,0 +1,21 @@
+<div id="app">
+  <h1 style="color: red">{{count}}</h1>
+  <p>someText</p>
+</div>
+
+<script src="../dist/vue.global.js"></script>
+<script>
+  Vue.createApp({
+    setup() {
+      const scope = Vue.effectScope()
+      let counter = Vue.ref(0)
+      setInterval(() => {
+        counter.value++
+      }, 1000)
+      scope.run(() => {
+        Vue.watchEffect(() => console.log(`counter: ${counter.value}`))
+      })
+      scope.stop()
+    }
+  }).mount('#app')
+</script>

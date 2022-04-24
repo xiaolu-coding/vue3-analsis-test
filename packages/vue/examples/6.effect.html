@@ -1,0 +1,26 @@
+<div id="app">
+  <h1 style="color: red">{{count}}</h1>
+  <p>someText</p>
+</div>
+
+<script src="../dist/vue.global.js"></script>
+<script>
+  Vue.createApp({
+    setup() {
+      const count = Vue.ref(0)
+
+      // Vue.watchEffect(() => console.log(count.value))
+      // // -> logs 0
+      Vue.effect(() => {
+        console.log('vue.effect')
+      })
+      setTimeout(() => {
+        count.value++
+        // -> logs 1
+      }, 100)
+      return {
+        count
+      }
+    }
+  }).mount('#app')
+</script>

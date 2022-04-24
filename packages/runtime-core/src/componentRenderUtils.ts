@@ -364,31 +364,38 @@ const isElementRoot = (vnode: VNode) => {
     vnode.type === Comment // potential v-if branch switch
   )
 }
-
+// From: updateComponent
 export function shouldUpdateComponent(
   prevVNode: VNode,
   nextVNode: VNode,
   optimized?: boolean
 ): boolean {
+  // 解构出新旧节点的props和children，旧节点的component和新节点的patchFlag
   const { props: prevProps, children: prevChildren, component } = prevVNode
   const { props: nextProps, children: nextChildren, patchFlag } = nextVNode
+  // 获取emits事件
   const emits = component!.emitsOptions
 
   // Parent component's render function was hot-updated. Since this may have
   // caused the child component's slots content to have changed, we need to
   // force the child to update as well.
+  // 父组件的渲染功能进行了热更新。 由于这可能有
+  // 导致子组件的插槽内容发生了变化，我们需要
+  // 强迫孩子也更新。
   if (__DEV__ && (prevChildren || nextChildren) && isHmrUpdating) {
     return true
   }
 
   // force child update for runtime directive or transition on component vnode.
+  // 对组件 vnode 上的运行时指令或转换强制子更新。
   if (nextVNode.dirs || nextVNode.transition) {
     return true
   }
-
+  // 如果optimized
   if (optimized && patchFlag >= 0) {
     if (patchFlag & PatchFlags.DYNAMIC_SLOTS) {
       // slot content that references values that might have changed,
+      // 引用可能已更改的值的插槽内容，
       // e.g. in a v-for
       return true
     }

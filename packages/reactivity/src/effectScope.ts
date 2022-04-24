@@ -12,26 +12,36 @@ export class EffectScope {
   scopes: EffectScope[] | undefined
   /**
    * track a child scope's index in its parent's scopes array for optimized
+   * 在其父范围数组中跟踪子范围的索引以进行优化
+   * 移动
    * removal
    */
   private index: number | undefined
 
   constructor(detached = false) {
     if (!detached && activeEffectScope) {
+      // 如果活动的范围不是空的，则将其作为父范围
       this.parent = activeEffectScope
+      // 如果父范围的子范围数组不存在，则创建，index为push前的长度
       this.index =
         (activeEffectScope.scopes || (activeEffectScope.scopes = [])).push(
           this
         ) - 1
     }
   }
-
+  // run方法
   run<T>(fn: () => T): T | undefined {
+    // 如果当前范围是活动的，
     if (this.active) {
       try {
+        // 将当前范围设置为活动的
         activeEffectScope = this
+        // 则执行fn并返回
         return fn()
       } finally {
+        // 如果当前范围是活动的，则将当前范围设置为父范围
+        console.log(this)
+        console.log('this.parent', this.parent)
         activeEffectScope = this.parent
       }
     } else if (__DEV__) {
@@ -46,7 +56,7 @@ export class EffectScope {
   off() {
     activeEffectScope = this.parent
   }
-
+  
   stop(fromParent?: boolean) {
     if (this.active) {
       let i, l
@@ -78,11 +88,12 @@ export class EffectScope {
 export function effectScope(detached?: boolean) {
   return new EffectScope(detached)
 }
-
+// 记录effectscope
 export function recordEffectScope(
   effect: ReactiveEffect,
   scope: EffectScope | undefined = activeEffectScope
 ) {
+  // effect创建的时候，就将effect推进scope.effects中
   if (scope && scope.active) {
     scope.effects.push(effect)
   }
